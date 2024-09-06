@@ -657,3 +657,23 @@ bot.on('message', (msg) => {
     }
   }
 });
+
+bot.onText(/\/estado_cea/, (msg) => {
+  // Construct the response message with the latest flow data of each hose
+  let responseMessage = "Último estado de las mangueras:\n";
+
+  publicHoses.forEach((hose) => {
+    // Check if waterFlowData array exists and is not empty
+    if (hose.waterFlowData && hose.waterFlowData.length > 0) {
+      // Get the last measurement from the waterFlowData array
+      const latestMeasurement = hose.waterFlowData[ hose.waterFlowData.length - 1];
+      responseMessage += `El flujo actual de la manguera ${hose.hose_id} es ${latestMeasurement.flow} L/s\n`;
+    } else {
+      // Handle the case where there is no data available for the hose
+      responseMessage += `No hay datos disponibles para la manguera ${hose.hose_id}\n`;
+    }
+  });
+
+  // Send the constructed message to the chat
+  bot.sendMessage(msg.chat.id, responseMessage);
+});
